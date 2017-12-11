@@ -15,7 +15,7 @@ class SettingScreen extends Component {
       return (
          <View>
             <Button
-            title='Reset All Saved Jobs'
+            title='Reset All Liked Places'
             large
             icon={{ name: 'delete-forever' }}
             backgroundColor='#F44336'

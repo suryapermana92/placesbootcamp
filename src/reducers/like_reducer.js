@@ -14,11 +14,11 @@ export default (state = INITIAL_STATE, action) => {
         case LIKE_JOB:
         console.log('job liked');
         const newState = _.uniqBy(
-            [...state, action.payload], 'jobkey'
+            [...state, action.payload], 'id'
         )
             const message = newState.length === state.length
-                            ? 'Job Already Before'
-                            : 'Save Job Success';
+                            ? 'Place Already Saved Before'
+                            : 'Place Like Success';
                             // return [ ...state, action.payload ];
             alert(message);
             return newState;

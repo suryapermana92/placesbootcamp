@@ -42,25 +42,29 @@ class MapScreen extends Component {
           this.getLocationAsync();
         }
       }
-//     async componentDidMount() {
-//         this.setState({ mapLoaded: true })
-//         const result = await Permissions.askAsync(Permissions.LOCATION);
-//         if (result.status === 'granted') {
-//             this.setState({ locationGranted: true })
-//         }
-//     }
+    async componentDidMount() {
+        this.setState({ mapLoaded: true })
+        const result = await Permissions.askAsync(Permissions.LOCATION);
+        if (result.status === 'granted') {
+            this.setState({ locationGranted: true })
+        }
+    }
    
     onRegionChangeComplete(region) {
         this.setState({ region })
     }
-    onButtonPress() {
+    onSearchPress() {
         console.log('button pressed')
         // this.setState({ searchText: 'Searching Jobs...' })
         this.props.fetchJobs(this.state.region, this.state.keyword, () => {
             alert('Places Saved')
             this.setState({ searchText: 'Search Places' })
-         
+            
         })
+        
+    }
+    onViewPress() {
+        this.props.navigation.navigate('deck')
         
     }
     onChangeText(text) {
@@ -79,37 +83,40 @@ class MapScreen extends Component {
         let userLocation = await Location.getCurrentPositionAsync();
         this.setState({ 
             region: { ...userLocation.coords, longitudeDelta: 0.05211871316703309, latitudeDelta: 0.08999999999835318 },
-            markers: { ...userLocation.coords, longitudeDelta: 0.05211871316703309, latitudeDelta: 0.08999999999835318 },
             initialRegion: true
         });     
     }
     renderMap() {
         if (this.state.initialRegion) {
+            console.log(this.state.region)
             return (
             <MapView
             initialRegion={this.state.region}
             style={{ flex: 1 }} 
            
             onRegionChangeComplete={this.onRegionChangeComplete.bind(this)}>
-                {this.renderMarker()}
-            </MapView>
-            );
-        }
-    }
-    renderMarker() {
-        console.log(this.props.jobs)
-        if(this.props.jobs.results.length >0) {
-            
-        this.props.jobs.results.map((place, index)=> {
-            console.log(place.geometry.location.lat,place.geometry.location.lng)
-        return (
-        <MapView.Marker
-        title={place.name}
-        coordinate={{latitude: place.geometry.location.lat, longitude: place.geometry.location.lng}}
-        />
+            <MapView.Marker
+                coordinate={this.state.region}
+                title='your location'
+                description='your current position'
+                />
+            {
+                this.props.jobs.results.map((place, index)=> {
+                    console.log(place.geometry.location.lat,place.geometry.location.lng)
+                    return (
+                        <MapView.Marker
+                            key={index}
+                            title={place.name}
+                            description={place.vicinity}
+                            coordinate={{latitude: place.geometry.location.lat, longitude: place.geometry.location.lng}}
+                            pinColor='green'
+                        />
+                    );
+                })
+            }
+        </MapView>
         );
-    })
-}
+    }
 }
     render() {
 //         console.log(this.props)
@@ -143,14 +150,14 @@ class MapScreen extends Component {
                 
                 backgroundColor='#009688'
                 icon={{ name: 'search' }}
-                onPress={() => this.onButtonPress()}/>
+                onPress={() => this.onSearchPress()}/>
 
                 <Button
                 title={this.state.viewText}
                 
                 backgroundColor='#FF2851'
                 icon={{ name: 'view-list' }}
-                onPress={() => this.onButtonPress()}/>
+                onPress={() => this.onViewPress()}/>
             </View>
          </View>
       );
